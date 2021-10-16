@@ -14,7 +14,7 @@ class ArticleController extends Controller
 
     // public function __construct()
     // {
-    //     // アクションに合わせたpolicyのメソッドで認可されていないユーザーはエラーを投げる
+    //     // アクションに合わせたpolicyのメソッcドで認可されていないユーザーはエラーを投げる
     //     $this->authorizeResource(Post::class, 'article');
     // }
 
@@ -170,15 +170,16 @@ class ArticleController extends Controller
         // 認可されていないユーザーはエラーを投げる
         $this->authorize('delete', $article);
 
-        $article = Article::with(['attachment'])->find($article->id);
+        // 削除するファイルのパスを取得
+        $delete_file_path = $article->image_path;
 
         DB::beginTransaction();
         try {
-            // Article保存
+            // Article削除
             $article->delete();
 
             // delete file
-            if (!Storage::delete('articles/' . $article->attachment->name)) {
+            if (!Storage::delete($delete_file_path)) {
                 throw new \Exception('Faild to delete old image...');
             }
 
@@ -190,6 +191,8 @@ class ArticleController extends Controller
             // back()->withErrors(['error' => '保存に失敗しました']);
             return back()->withInput()->withErrors($e->getMessage());
         }
-        return redirect(route('articles.index'))->with(['flash_message' => '削除が完了しました']);
+        return redirect()
+            ->route('articles.index')
+            ->with(['flash_message' => '削除が完了しました']);
     }
 }
