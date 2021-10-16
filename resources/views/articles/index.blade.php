@@ -8,7 +8,9 @@
                 <article class="card">
                     <img src="{{ $article->image_url }}" class="card-img-top">
                     <div class="card-title mx-3">
-                        {{ $article->caption }}
+                        <a href="{{ route('articles.show', $article) }}" class="text-decoration-none stretched-link">
+                            {{ $article->caption }}
+                        </a>
                     </div>
                 </article>
             </div>
