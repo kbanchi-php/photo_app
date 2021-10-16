@@ -1,11 +1,12 @@
-+ @extends('layouts.app')
+@extends('layouts.app')
 @section('title', '新規登録')
 @section('content')
     <div class="col-8 col-offset-2 mx-auto">
         <h1>新規登録</h1>
+        @include('partial.errors')
         <form action="{{ route('articles.store') }}" method="post" enctype="multipart/form-data">
+            @csrf
             <div class="card mb-3">
-                @csrf
                 <div class="row m-3">
                     <div class="mb-3">
                         <label for="file" class="form-label">画像ファイルを選択してください</label>

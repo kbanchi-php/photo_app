@@ -4,6 +4,11 @@ namespace App\Http\Controllers;
 
 use App\Models\Article;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
+use App\Models\Attachment;
+use Illuminate\Support\Facades\DB;
+
+use function Ramsey\Uuid\v1;
 
 class ArticleController extends Controller
 {
@@ -36,7 +41,51 @@ class ArticleController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $request->validate([
+            'file' => 'required|file|image',
+            'caption' => 'required|max:255',
+            'info' => 'max:255'
+        ]);
+
+        // Articleのデータを用意
+        $article = new Article();
+        $article->fill($request->all());
+        // ユーザーIDを追加
+        $article->user_id = 1;
+        // ファイルの用意
+        $file = $request->file;
+        $name = $file->getClientOriginalName();
+
+        // トランザクション開始
+        DB::beginTransaction();
+
+        try {
+            // Article保存
+            $article->save();
+            // 画像ファイル保存
+            $path = Storage::putFile('articles', $file);
+            if (!$path) {
+                throw new \Exception("Faild to save image...");
+            }
+            // Attachmentモデルの情報を用意
+            $attachment = new Attachment([
+                'article_id' => $article->id,
+                'org_name' => $name,
+                // 'name' => $path
+                'name' => basename($path)
+            ]);
+            // Attachment保存
+            $attachment->save();
+
+            // トランザクション終了(成功)
+            DB::commit();
+        } catch (\Exception $e) {
+            // トランザクション終了(失敗)
+            DB::rollback();
+            // return back()->withErrors(['error' => '保存に失敗しました']);
+            return back()->withInput()->withErrors($e->getMessage());
+        }
+        return redirect(route('articles.index'))->with(['flash_message' => '登録が完了しました']);
     }
 
     /**
@@ -70,7 +119,27 @@ class ArticleController extends Controller
      */
     public function update(Request $request, Article $article)
     {
-        //
+        // バリデーション
+        $request->validate([
+            'caption' => 'required|max:255',
+            'info' => 'max:255'
+        ]);
+        // Articleのデータを更新
+        $article->fill($request->all());
+        // トランザクション開始
+        DB::beginTransaction();
+        try {
+            // Article保存
+            $article->save();
+            // トランザクション終了(成功)
+            DB::commit();
+        } catch (\Exception $e) {
+            // トランザクション終了(失敗)
+            DB::rollback();
+            // back()->withErrors(['error' => '保存に失敗しました']);
+            return back()->withInput()->withErrors($e->getMessage());
+        }
+        return redirect(route('articles.index'))->with(['flash_message' => '更新が完了しました']);
     }
 
     /**
@@ -81,6 +150,27 @@ class ArticleController extends Controller
      */
     public function destroy(Article $article)
     {
-        //
+
+        $article = Article::with(['attachment'])->find($article->id);
+
+        DB::beginTransaction();
+        try {
+            // Article保存
+            $article->delete();
+
+            // delete file
+            if (!Storage::delete('articles/' . $article->attachment->name)) {
+                throw new \Exception('Faild to delete old image...');
+            }
+
+            // トランザクション終了(成功)
+            DB::commit();
+        } catch (\Exception $e) {
+            // トランザクション終了(失敗)
+            DB::rollback();
+            // back()->withErrors(['error' => '保存に失敗しました']);
+            return back()->withInput()->withErrors($e->getMessage());
+        }
+        return redirect(route('articles.index'))->with(['flash_message' => '削除が完了しました']);
     }
 }

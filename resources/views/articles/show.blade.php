@@ -1,7 +1,8 @@
-+ @extends('layouts.app')
+@extends('layouts.app')
 @section('title', '詳細画面')
 @section('content')
     <h1>画像詳細</h1>
+    @include('partial.errors')
     <section>
         <article class="card shadow position-relative">
             <figure class="m-3">
@@ -26,4 +27,13 @@
             </a>
         </article>
     </section>
+    <form action="{{ route('articles.destroy', $article) }}" method="post" id="form">
+        @csrf
+        @method('delete')
+    </form>
+    <div class="d-grid col-6 mx-auto gap-3">
+        <a href="{{ route('articles.index') }}" class="btn btn-secondary btn-lg">戻る</a>
+        <input type="submit" value="削除" form="form" class="btn btn-danger btn-lg"
+            onclick="if (!confirm('本当に削除してよろしいですか？')) {return false};">
+    </div>
 @endsection
