@@ -18,7 +18,7 @@ class OAuthController extends Controller
 
     public function oauthCallback($provider)
     {
-        // dd(Socialite::with('github')->user());
+        // dd(Socialite::with($provider)->user());
         // 認証情報が返ってこなかった場合はログイン画面にリダイレクト
         try {
             $socialUser = Socialite::with($provider)->user();

@@ -37,10 +37,10 @@ Route::prefix('auth')->middleware('guest')->group(function () {
     // auth/githubにアクセスがあった場合はOAuthControllerのredirectToProviderアクションへルーティング
     Route::get('/{provider}', [
         App\Http\Controllers\Auth\OAuthController::class, 'redirectToProvider'
-    ])->where('provider', 'github|google')->name('redirectToProvider');
+    ])->where('provider', 'github|google|line')->name('redirectToProvider');
 
     // auth/github/callbackにアクセスがあった場合はOAuthControllerのoauthCallbackアクションへルーティング
     Route::get('/{provider}/callback', [
         App\Http\Controllers\Auth\OAuthController::class, 'oauthCallback'
-    ])->where('provider', 'github|google')->name('oauthCallback');
+    ])->where('provider', 'github|google|line')->name('oauthCallback');
 });

@@ -59,6 +59,7 @@
             <div class="d-flex justify-content-around">
                 <a href="{{ url('auth/github') }}" class="btn btn-secondary"><i class="fab fa-github"> GitHub</i></a>
                 <a href="{{ url('auth/google') }}" class="btn btn-danger"><i class="fab fa-google"> Google</i></a>
+                <a href="{{ url('auth/line') }}" class="btn btn-success"><i class="fab fa-line"> Line</i></a>
             </div>
         </div>
     </x-auth-card>
