@@ -13,6 +13,34 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::get('/', function () {
-    return view('welcome');
+Route::get('/', [
+    App\Http\Controllers\ArticleController::class, 'index'
+])->name('root');
+
+Route::resource('articles', App\Http\Controllers\ArticleController::class)
+    ->middleware(['auth'])
+    ->only(['create', 'store', 'edit', 'update', 'destroy']);
+//  ->except(['index', 'show']);  // こちらでも可
+
+Route::resource('articles', App\Http\Controllers\ArticleController::class)
+    ->only(['index', 'show']);
+//  ->except(['create', 'store', 'edit', 'update', 'destroy']);  // こちらでも可
+
+Route::get('/dashboard', function () {
+    return view('dashboard');
+})->middleware(['auth'])->name('dashboard');
+
+require __DIR__ . '/auth.php';
+
+// authから始まるルーティングに認証前にアクセスがあった場合
+Route::prefix('auth')->middleware('guest')->group(function () {
+    // auth/githubにアクセスがあった場合はOAuthControllerのredirectToProviderアクションへルーティング
+    Route::get('/{provider}', [
+        App\Http\Controllers\Auth\OAuthController::class, 'redirectToProvider'
+    ])->where('provider', 'github|google|line')->name('redirectToProvider');
+
+    // auth/github/callbackにアクセスがあった場合はOAuthControllerのoauthCallbackアクションへルーティング
+    Route::get('/{provider}/callback', [
+        App\Http\Controllers\Auth\OAuthController::class, 'oauthCallback'
+    ])->where('provider', 'github|google|line')->name('oauthCallback');
 });
