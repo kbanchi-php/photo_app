@@ -13,11 +13,11 @@
                     </div>
                     <div class="mb-3">
                         <label for="caption" class="form-label">イメージの説明を入力してください</label>
-                        <input type="text" name="caption" id="caption" class="form-control">
+                        <input type="text" name="caption" id="caption" class="form-control" value="{{ old('caption') }}">
                     </div>
                     <div>
                         <label for="info" class="form-label">その他情報を入力してください</label>
-                        <textarea name="info" id="info" rows="5" class="form-control"></textarea>
+                        <textarea name="info" id="info" rows="5" class="form-control">{{ old('info') }}</textarea>
                     </div>
                     <input type="submit" class="btn btn-success btn-lg" value="登録">
                 </div>
