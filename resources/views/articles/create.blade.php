@@ -1,8 +1,7 @@
-@extends('layouts.app')
+@extends('layouts.main')
 @section('title', '新規登録')
 @section('content')
     <div class="col-8 col-offset-2 mx-auto">
-        <h1>新規登録</h1>
         @include('partial.errors')
         <form action="{{ route('articles.store') }}" method="post" enctype="multipart/form-data">
             @csrf
@@ -17,7 +16,7 @@
                         <input type="text" name="caption" id="caption" class="form-control">
                     </div>
                     <div>
-                        <label for="info" class="form-label">イメージの説明を入力してください</label>
+                        <label for="info" class="form-label">その他情報を入力してください</label>
                         <textarea name="info" id="info" rows="5" class="form-control"></textarea>
                     </div>
                     <input type="submit">

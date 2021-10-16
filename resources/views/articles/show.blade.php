@@ -1,7 +1,6 @@
-@extends('layouts.app')
+@extends('layouts.main')
 @section('title', '詳細画面')
 @section('content')
-    <h1>画像詳細</h1>
     @include('partial.errors')
     <section>
         <article class="card shadow position-relative">
@@ -22,15 +21,19 @@
                     </div>
                 </div>
             </figure>
-            <a href="{{ route('articles.edit', $article) }}">
-                <i class="fas fa-edit position-absolute top-0 end-0 fs-1"></i>
-            </a>
+            @can('update', $article)
+                <a href="{{ route('articles.edit', $article) }}">
+                    <i class="fas fa-edit position-absolute top-0 end-0 fs-1"></i>
+                </a>
+            @endcan
         </article>
     </section>
-    <form action="{{ route('articles.destroy', $article) }}" method="post" id="form">
-        @csrf
-        @method('delete')
-    </form>
+    @can('destroy', $article)
+        <form action="{{ route('articles.destroy', $article) }}" method="post" id="form">
+            @csrf
+            @method('delete')
+        </form>
+    @endcan
     <div class="d-grid col-6 mx-auto gap-3">
         <a href="{{ route('articles.index') }}" class="btn btn-secondary btn-lg">戻る</a>
         <input type="submit" value="削除" form="form" class="btn btn-danger btn-lg"

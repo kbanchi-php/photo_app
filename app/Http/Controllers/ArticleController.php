@@ -12,6 +12,13 @@ use function Ramsey\Uuid\v1;
 
 class ArticleController extends Controller
 {
+
+    // public function __construct()
+    // {
+    //     // アクションに合わせたpolicyのメソッドで認可されていないユーザーはエラーを投げる
+    //     $this->authorizeResource(Post::class, 'article');
+    // }
+
     /**
      * Display a listing of the resource.
      *
@@ -107,6 +114,8 @@ class ArticleController extends Controller
      */
     public function edit(Article $article)
     {
+        // 認可されていないユーザーはエラーを投げる
+        $this->authorize('update', $article);
         return view('articles.edit', compact('article'));
     }
 
@@ -119,6 +128,9 @@ class ArticleController extends Controller
      */
     public function update(Request $request, Article $article)
     {
+        // 認可されていないユーザーはエラーを投げる
+        $this->authorize('update', $article);
+
         // バリデーション
         $request->validate([
             'caption' => 'required|max:255',
@@ -150,6 +162,9 @@ class ArticleController extends Controller
      */
     public function destroy(Article $article)
     {
+
+        // 認可されていないユーザーはエラーを投げる
+        $this->authorize('delete', $article);
 
         $article = Article::with(['attachment'])->find($article->id);
 
