@@ -13,14 +13,16 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::get('/', [App\Http\Controllers\ArticleController::class, 'index']);
+Route::get('/', [
+    App\Http\Controllers\ArticleController::class, 'index'
+])->name('root');
 
-Route::resource('articles', ArticleController::class)
+Route::resource('articles', App\Http\Controllers\ArticleController::class)
     ->middleware(['auth'])
     ->only(['create', 'store', 'edit', 'update', 'destroy']);
 //  ->except(['index', 'show']);  // こちらでも可
 
-Route::resource('articles', ArticleController::class)
+Route::resource('articles', App\Http\Controllers\ArticleController::class)
     ->only(['index', 'show']);
 //  ->except(['create', 'store', 'edit', 'update', 'destroy']);  // こちらでも可
 
