@@ -35,12 +35,12 @@ require __DIR__ . '/auth.php';
 // authから始まるルーティングに認証前にアクセスがあった場合
 Route::prefix('auth')->middleware('guest')->group(function () {
     // auth/githubにアクセスがあった場合はOAuthControllerのredirectToProviderアクションへルーティング
-    Route::get('/github', [
+    Route::get('/{provider}', [
         App\Http\Controllers\Auth\OAuthController::class, 'redirectToProvider'
-    ])->name('redirectToProvider');
+    ])->where('provider', 'github|google')->name('redirectToProvider');
 
     // auth/github/callbackにアクセスがあった場合はOAuthControllerのoauthCallbackアクションへルーティング
-    Route::get('/github/callback', [
+    Route::get('/{provider}/callback', [
         App\Http\Controllers\Auth\OAuthController::class, 'oauthCallback'
-    ])->name('oauthCallback');
+    ])->where('provider', 'github|google')->name('oauthCallback');
 });

@@ -11,28 +11,32 @@ use Illuminate\Support\Facades\Auth;
 
 class OAuthController extends Controller
 {
-    public function redirectToProvider()
+    public function redirectToProvider($provider)
     {
-        return Socialite::driver('github')->redirect();
+        return Socialite::driver($provider)->redirect();
     }
 
-    public function oauthCallback()
+    public function oauthCallback($provider)
     {
         // dd(Socialite::with('github')->user());
         // 認証情報が返ってこなかった場合はログイン画面にリダイレクト
         try {
-            $socialUser = Socialite::with('github')->user();
+            $socialUser = Socialite::with($provider)->user();
         } catch (\Exception $e) {
             return redirect('/login')->withErrors(['oauth_error' => '予期せぬエラーが発生しました']);
         }
         // emailで検索してユーザーが見つかればそのユーザーを、見つからなければ新しいインスタンスを生成
         $user = User::firstOrNew(['email' => $socialUser->getEmail()]);
         // ユーザーが認証済みか確認
-        if (!$user->exists) {
+        if ($user->exists) {
+            if ($user->identityProvider->name != $provider) {
+                return redirect('/login')->with('oauth_error', 'このメールアドレスはすでに別の認証で使われてます');
+            }
+        } else {
             $user->name = $socialUser->getNickname() ?? $socialUser->name;
             $identityProvider = new IdentityProvider([
                 'id' => $socialUser->getId(),
-                'name' => 'github'
+                'name' => $provider
             ]);
 
             DB::beginTransaction();
