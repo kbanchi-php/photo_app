@@ -31,3 +31,16 @@ Route::get('/dashboard', function () {
 })->middleware(['auth'])->name('dashboard');
 
 require __DIR__ . '/auth.php';
+
+// authから始まるルーティングに認証前にアクセスがあった場合
+Route::prefix('auth')->middleware('guest')->group(function () {
+    // auth/githubにアクセスがあった場合はOAuthControllerのredirectToProviderアクションへルーティング
+    Route::get('/github', [
+        App\Http\Controllers\Auth\OAuthController::class, 'redirectToProvider'
+    ])->name('redirectToProvider');
+
+    // auth/github/callbackにアクセスがあった場合はOAuthControllerのoauthCallbackアクションへルーティング
+    Route::get('/github/callback', [
+        App\Http\Controllers\Auth\OAuthController::class, 'oauthCallback'
+    ])->name('oauthCallback');
+});

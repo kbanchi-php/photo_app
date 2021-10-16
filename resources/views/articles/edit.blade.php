@@ -2,6 +2,7 @@
 @section('title', '編集画面')
 @section('content')
     <section>
+        @include('partial.errors')
         <article class="card shadow">
             <figure class="m-3">
                 <div class="row">

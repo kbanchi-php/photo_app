@@ -7,8 +7,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use App\Models\Attachment;
 use Illuminate\Support\Facades\DB;
-
-use function Ramsey\Uuid\v1;
+use App\Http\Requests\ArticleRequest;
 
 class ArticleController extends Controller
 {
@@ -46,13 +45,13 @@ class ArticleController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
+    public function store(ArticleRequest $request)
     {
-        $request->validate([
-            'file' => 'required|file|image',
-            'caption' => 'required|max:255',
-            'info' => 'max:255'
-        ]);
+        // $request->validate([
+        //     'file' => 'required|file|image',
+        //     'caption' => 'required|max:255',
+        //     'info' => 'max:255'
+        // ]);
 
         // Articleのデータを用意
         $article = new Article();
@@ -87,6 +86,10 @@ class ArticleController extends Controller
             // トランザクション終了(成功)
             DB::commit();
         } catch (\Exception $e) {
+            // 失敗時はファイルを保存しない
+            if (!empty($path)) {
+                Storage::delete($path);
+            }
             // トランザクション終了(失敗)
             DB::rollback();
             // return back()->withErrors(['error' => '保存に失敗しました']);
@@ -126,16 +129,17 @@ class ArticleController extends Controller
      * @param  \App\Models\Article  $article
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, Article $article)
+    public function update(ArticleRequest $request, Article $article)
     {
         // 認可されていないユーザーはエラーを投げる
         $this->authorize('update', $article);
 
-        // バリデーション
-        $request->validate([
-            'caption' => 'required|max:255',
-            'info' => 'max:255'
-        ]);
+        // // バリデーション
+        // $request->validate([
+        //     'caption' => 'required|max:255',
+        //     'info' => 'max:255'
+        // ]);
+
         // Articleのデータを更新
         $article->fill($request->all());
         // トランザクション開始
