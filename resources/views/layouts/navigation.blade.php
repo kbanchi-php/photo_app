@@ -22,7 +22,7 @@
                             @auth
                                 <div>{{ Auth::user()->name }}</div>
                             @else
-                                <div>guest</div>
+                                <div>Guest</div>
                             @endauth
 
                             <div class="ml-1">
@@ -38,8 +38,8 @@
                     <x-slot name="content">
                         <!-- Authentication -->
                         @auth
-                            <x-dropdown-link :href="route('posts.create')">
-                                {{ __('Create Post') }}
+                            <x-dropdown-link :href="route('articles.create')">
+                                {{ __('Create Articles') }}
                             </x-dropdown-link>
                             <form method="POST" action="{{ route('logout') }}">
                                 @csrf
@@ -78,11 +78,6 @@
 
     <!-- Responsive Navigation Menu -->
     <div :class="{'block': open, 'hidden': ! open}" class="hidden sm:hidden">
-        <div class="pt-2 pb-3 space-y-1">
-            <x-responsive-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')">
-                {{ __('Dashboard') }}
-            </x-responsive-nav-link>
-        </div>
 
         <!-- Responsive Settings Options -->
         <div class="pt-4 pb-1 border-t border-gray-200">
@@ -94,7 +89,7 @@
 
                 <div class="mt-3 space-y-1">
                     <!-- Authentication -->
-                    <x-responsive-nav-link :href="route('posts.create')">
+                    <x-responsive-nav-link :href="route('articles.create')">
                         {{ __('Create Post') }}
                     </x-responsive-nav-link>
                     <form method="POST" action="{{ route('logout') }}">

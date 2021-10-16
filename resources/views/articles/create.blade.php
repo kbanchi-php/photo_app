@@ -19,7 +19,7 @@
                         <label for="info" class="form-label">その他情報を入力してください</label>
                         <textarea name="info" id="info" rows="5" class="form-control"></textarea>
                     </div>
-                    <input type="submit">
+                    <input type="submit" class="btn btn-success btn-lg" value="登録">
                 </div>
         </form>
     </div>

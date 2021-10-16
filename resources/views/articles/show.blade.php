@@ -28,7 +28,7 @@
             @endcan
         </article>
     </section>
-    @can('destroy', $article)
+    @can('delete', $article)
         <form action="{{ route('articles.destroy', $article) }}" method="post" id="form">
             @csrf
             @method('delete')
@@ -37,6 +37,6 @@
     <div class="d-grid col-6 mx-auto gap-3">
         <a href="{{ route('articles.index') }}" class="btn btn-secondary btn-lg">戻る</a>
         <input type="submit" value="削除" form="form" class="btn btn-danger btn-lg"
-            onclick="if (!confirm('本当に削除してよろしいですか？')) {return false};">
+            onclick="if(!confirm('本当に削除してよろしいですか？')) {return false};">
     </div>
 @endsection
