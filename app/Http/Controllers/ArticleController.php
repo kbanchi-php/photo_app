@@ -59,8 +59,8 @@ class ArticleController extends Controller
         // ユーザーIDを追加
         $article->user_id = $request->user()->id;
         // ファイルの用意
-        $file = $request->file;
-        $name = $file->getClientOriginalName();
+        // $file = $request->file;
+        $files = $request->file;
 
         // トランザクション開始
         DB::beginTransaction();
@@ -68,27 +68,35 @@ class ArticleController extends Controller
         try {
             // Article保存
             $article->save();
-            // 画像ファイル保存
-            $path = Storage::putFile('articles', $file);
-            if (!$path) {
-                throw new \Exception("Faild to save image...");
+
+            $paths = [];
+            foreach ($files as $file) {
+                $name = $file->getClientOriginalName();
+                // 画像ファイル保存
+                $path = Storage::putFile('articles', $file);
+                if (!$path) {
+                    throw new \Exception("Faild to save image...");
+                }
+                $paths[] = $path;
+                // Attachmentモデルの情報を用意
+                $attachment = new Attachment([
+                    'article_id' => $article->id,
+                    'org_name' => $name,
+                    // 'name' => $path
+                    'name' => basename($path)
+                ]);
+                // Attachment保存
+                $attachment->save();
             }
-            // Attachmentモデルの情報を用意
-            $attachment = new Attachment([
-                'article_id' => $article->id,
-                'org_name' => $name,
-                // 'name' => $path
-                'name' => basename($path)
-            ]);
-            // Attachment保存
-            $attachment->save();
 
             // トランザクション終了(成功)
             DB::commit();
         } catch (\Exception $e) {
             // 失敗時はファイルを保存しない
-            if (!empty($path)) {
-                Storage::delete($path);
+            foreach ($paths as $path) {
+                if (!empty($path)) {
+                    Storage::delete($path);
+                }
             }
             // トランザクション終了(失敗)
             DB::rollback();
@@ -171,7 +179,8 @@ class ArticleController extends Controller
         $this->authorize('delete', $article);
 
         // 削除するファイルのパスを取得
-        $delete_file_path = $article->image_path;
+        // $delete_file_path = $article->image_path;
+        $delete_file_paths = $article->image_paths;
 
         DB::beginTransaction();
         try {
@@ -179,8 +188,10 @@ class ArticleController extends Controller
             $article->delete();
 
             // delete file
-            if (!Storage::delete($delete_file_path)) {
-                throw new \Exception('Faild to delete old image...');
+            foreach ($delete_file_paths as $delete_file_path) {
+                if (!Storage::delete($delete_file_path)) {
+                    throw new \Exception('Faild to delete old image...');
+                }
             }
 
             // トランザクション終了(成功)
