@@ -32,7 +32,8 @@ class ArticleRequest extends FormRequest
         ];
 
         if ($route == 'articles.store') {
-            $rule['file'] = 'required|file|image';
+            // $rule['file'] = 'required|file|image';
+            $rule['file'] = 'required';
         }
 
         return $rule;

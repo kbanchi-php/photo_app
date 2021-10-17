@@ -20,6 +20,15 @@
                         </figcaption>
                     </div>
                 </div>
+                <div class="row">
+                    <div class="col-12">
+                        <div class="d-flex">
+                            @foreach ($article->image_urls as $url)
+                                <img class="d-block w-10" src="{{ $url }}">
+                            @endforeach
+                        </div>
+                    </div>
+                </div>
             </figure>
             @can('update', $article)
                 <a href="{{ route('articles.edit', $article) }}">
